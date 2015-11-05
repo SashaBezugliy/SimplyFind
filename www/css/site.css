@@ -25,10 +25,6 @@ body {
     max-height: 20%;
     overflow: auto;
 }
-    .selected-list>div {
-        margin: 0 50%;
-        width: 50%;
-    }
 .map-marker {
     text-align: center;
     position: absolute;
@@ -50,6 +46,10 @@ body {
 
 .list-marker-container {
     cursor: pointer;
+    float: left;
+    margin-right: 20px;
+    background-color: white;
+    border-radius: 5px;
 }
 
 .pin {

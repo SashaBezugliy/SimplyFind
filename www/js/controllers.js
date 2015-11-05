@@ -10,19 +10,16 @@ angular.module('starter.controllers', [])
             $.each(ProductService.all(), function (i, product) { allProducts.push(product); });
             createTypeAhead();
             
-
-            $('.typeahead').bind('typeahead:select', function(ev, product) {
+            $('.typeahead').bind('typeahead:select', function (ev, product) {
                 index++;
 
                 addToMap(product);
                 addToList(product);
 
                 filterTypeahed(product);
-
             });
 
-            $scope.init = function () {
-
+            $scope.initMap = function () {
                 $('#map').css('height', $('body').height() - $('.typeahead-container').outerHeight(true));
 
                 var myOptions = {
@@ -33,10 +30,8 @@ angular.module('starter.controllers', [])
                 map = new google.maps.Map(document.getElementById("map"), myOptions);
                 map.setOptions({ styles: [{ featureType: "poi", stylers: [{ "visibility": "off" }] }] });
 
-                //var ctrlBottom = $('.selected-list');
-                //var bottom = ctrlBottom.clone();
-                //map.controls[google.maps.ControlPosition.BOTTOM_CENTER].push(bottom[0]);
-                //ctrlBottom.remove();
+                var ctrlBottom = $('<div/>', { "class": "selected-list" });
+                map.controls[google.maps.ControlPosition.BOTTOM_LEFT].push(ctrlBottom[0]);
 
                 $(window).resize(function() {
                     //google.maps.event.trigger(map, "resize");
@@ -49,10 +44,10 @@ angular.module('starter.controllers', [])
 
             function addToMap(product) {
                 var element = $("<div/>")
-                    .addClass('map-marker animated bounceInDown')
+                    .addClass('map-marker animated bounce')
                     .data("product-id", product.id)
                     .text(product.name)
-                    .append($("<div/>").addClass('pin animated bounceInDown'))[0];
+                    .append($("<div/>").addClass('pin animated bounce'))[0];
 
                 var marker = new CustomMarker(
                     new google.maps.LatLng(product.lat, product.lng),
@@ -69,11 +64,9 @@ angular.module('starter.controllers', [])
                     var product = selectedProducts.filter(function (p) { return p.Id == $(el).data('product-id') })[0];
                     onHold(el, showConfirm, product.Id, product.ProductName);
 
-                    var that = this;
-
                     $timeout(function() {
                         map.setCenter(marker.getPosition());
-                        map.panBy(0, (map.getDiv().offsetHeight / 2) /*+ that.anchorPoint.y*/);
+                        //map.panBy(0, (map.getDiv().offsetHeight / 2) /*+ that.anchorPoint.y*/);
                     }, 100);
 
                 });
@@ -85,7 +78,7 @@ angular.module('starter.controllers', [])
                 var $dt = $('<div/>').addClass("list-marker-container");
                 var $div = $('<div/>').addClass("list-marker ").data('product-id', product.id);
                 var $span = $('<span/>').text(product.name);
-                $('.selected-list>div').append($dt.append($div).append($span).fadeIn(1000));
+                $('.selected-list').append($dt.append($div).append($span).fadeIn(1000));
 
                 //click on LIST
                 $dt.click(function () {
@@ -93,8 +86,6 @@ angular.module('starter.controllers', [])
                     changeMarkerState(productId);
                 });
                 onHold($dt, showConfirm, product.id, product.name);
-
-                $('#map').height($('#map').height() - $('.selected-list').height());
             }
 
             function onHold(elem, showConfirm, productId, productName) {
@@ -188,7 +179,6 @@ angular.module('starter.controllers', [])
                     source: productNames.ttAdapter(),
                 });
             }
-
 
         }
     );
