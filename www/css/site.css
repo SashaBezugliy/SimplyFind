@@ -1,0 +1,70 @@
+﻿
+/* Index.chtml */
+
+html {
+    height: 100%;
+}
+
+body {
+    height: 100%;
+    margin: 0;
+    padding: 0;
+}
+
+#map {
+    /*height: calc(100% - 30px); not working for ionic*/
+}
+
+.ctrl {
+    width: 99%;
+    background-color: #fff;
+}
+.selected-list {
+    padding-bottom: 20px;
+    margin-top: 20px;
+    max-height: 20%;
+    overflow: auto;
+}
+    .selected-list>div {
+        margin: 0 50%;
+        width: 50%;
+    }
+.map-marker {
+    text-align: center;
+    position: absolute;
+}
+
+.list-marker {
+    position: relative;
+    display: inline-block;
+    background: url(../img/checkbox_empty.png) no-repeat;
+    background-size: 100%;
+    height: 30px;
+    width: 30px;
+}
+
+    .list-marker.checked {
+        background: url(../img/checkbox.png) no-repeat;
+        background-size: 100%;
+    }
+
+.list-marker-container {
+    cursor: pointer;
+}
+
+.pin {
+    width: 40px;
+    height: 50px;
+    content: '';
+    background: url(../img/marker.png) no-repeat;
+    background-size: 100%;
+    margin: 0 auto;
+}
+
+.map-marker.checked .pin {
+    height: 44px;
+    width: 50px;
+    background: url(../img/marker_checked.png) no-repeat;
+    background-size: 100%;
+}
+
