@@ -6,6 +6,7 @@ angular.module('starter.controllers', [])
             var selectedProducts = [];
             var index = 0;
             var markers = [];
+            var centerLatLng = new google.maps.LatLng(49.773709, 24.009805);
         
             $.each(ProductService.all(), function (i, product) { allProducts.push(product); });
             createTypeAhead();
@@ -20,22 +21,23 @@ angular.module('starter.controllers', [])
             });
 
             $scope.initMap = function () {
-                $('#map').css('height', $('body').height() - $('.typeahead-container').outerHeight(true));
+                setMapHeight();
 
                 var myOptions = {
-                    center: new google.maps.LatLng(49.773709, 24.009805),
+                    center: centerLatLng,
                     mapTypeId: google.maps.MapTypeId.ROADMAP,
                     disableDefaultUI: true
                 };
-                map = new google.maps.Map(document.getElementById("map"), myOptions);
+                map = new google.maps.Map($("#map")[0], myOptions);
                 map.setOptions({ styles: [{ featureType: "poi", stylers: [{ "visibility": "off" }] }] });
 
                 var ctrlBottom = $('<div/>', { "class": "selected-list" });
                 map.controls[google.maps.ControlPosition.BOTTOM_LEFT].push(ctrlBottom[0]);
 
                 $(window).resize(function() {
-                    //google.maps.event.trigger(map, "resize");
-                    //map.setCenter(new google.maps.LatLng(49.773709, 24.009805));
+                    setMapHeight();
+                    google.maps.event.trigger(map, "resize");
+                    centerMap(centerLatLng);
                 });
 
                 var layer = new google.maps.KmlLayer("http://semenov.org.ua/Ashan.kmz");
@@ -62,12 +64,9 @@ angular.module('starter.controllers', [])
 
                 google.maps.event.addListener(marker, 'created', function(el) {
                     var product = selectedProducts.filter(function (p) { return p.Id == $(el).data('product-id') })[0];
-                    onHold(el, showConfirm, product.Id, product.ProductName);
+                    onHold(el, product.Id, product.ProductName);
 
-                    $timeout(function() {
-                        map.setCenter(marker.getPosition());
-                        //map.panBy(0, (map.getDiv().offsetHeight / 2) /*+ that.anchorPoint.y*/);
-                    }, 100);
+                    centerMap(marker.getPosition());
 
                 });
 
@@ -75,20 +74,24 @@ angular.module('starter.controllers', [])
             }
 
             function addToList(product) {
-                var $dt = $('<div/>').addClass("list-marker-container");
-                var $div = $('<div/>').addClass("list-marker ").data('product-id', product.id);
-                var $span = $('<span/>').text(product.name);
-                $('.selected-list').append($dt.append($div).append($span).fadeIn(1000));
+                var $dt = $('<div/>', { 'class': "list-marker-container"});
+                var $cbx = $('<div/>', { 'class': "list-marker left", click: onCbxClick, data: { 'product-id': product.id } });
+                var $label = $('<div/>', { 'class': "left", text: product.name, click: onLabelClick, data: { 'product-id': product.id } });
+                $('.selected-list').append($dt.append($cbx).append($label).fadeIn(1000));
 
-                //click on LIST
-                $dt.click(function () {
-                    var productId = $(this).find('div').data('product-id');
-                    changeMarkerState(productId);
-                });
-                onHold($dt, showConfirm, product.id, product.name);
+                onHold($dt, product.id, product.name);
+
+                function onLabelClick() {
+                    var marker = getMarker($(this).data('product-id'));
+                    centerMap(marker.getPosition());
+                }
+
+                function onCbxClick() {
+                    changeMarkerState($(this).data('product-id'));
+                }
             }
 
-            function onHold(elem, showConfirm, productId, productName) {
+            function onHold(elem, productId, productName) {
                 $ionicGesture.on('hold', function () {
                     $timeout(function () { showConfirm(productId, productName) }, 200);
                 }, angular.element(elem));
@@ -126,12 +129,12 @@ angular.module('starter.controllers', [])
                     ]
                 }).then(function (res) {
                     if (res)
-                        removeMarkerFunc(productId);
+                        removeMarker(productId);
                 });
 
-                function removeMarkerFunc(productId) {
+                function removeMarker(productId) {
                     //remove from map
-                    var selected = markers.filter(function (marker) { return $(marker.args.element).data("product-id") == productId })[0];
+                    var selected = getMarker(productId);
                     selected.remove();
                     markers.splice(markers.indexOf(selected), 1);
                     //remove from list
@@ -180,5 +183,16 @@ angular.module('starter.controllers', [])
                 });
             }
 
+            function setMapHeight() {
+                $('#map').css('height', $('body').height() - $('.typeahead-container').height());
+            }
+
+            function getMarker(productId) {
+                return markers.filter(function (marker) { return $(marker.args.element).data("product-id") == productId })[0];
+            }
+
+            function centerMap(latLng) {
+                $timeout(function () { map.panTo(latLng); }, 100);
+            }
         }
     );

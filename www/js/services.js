@@ -29,6 +29,13 @@ angular.module('starter.services', [])
                     Lng: 24.009558962417603,
                     SupermarketName: "A"
                 }
+                , {
+                    Id: 6,
+                    ProductName: "Центр",
+                    Lat: 49.773709,
+                    Lng: 24.009805,
+                    SupermarketName: "A"
+                }
         ];
 
         return {
