@@ -1,6 +1,11 @@
 angular.module('starter.controllers', [])
     .controller('HomeCtrl', function ($scope,$ionicGesture,$ionicPopup, $timeout, ProductService) {
-
+        //todo
+        //1. Fix onhold on marker on mobile
+        //2. Style drop down
+        //3. Animate "ckecked/unchecked" 
+        //4. Max height for bottom area.
+        //4. Create server, connect it to database, deploy to SAMI
             var map;
             var allProducts = [];
             var selectedProducts = [];
