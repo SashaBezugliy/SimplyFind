@@ -1,6 +1,6 @@
 angular.module('starter.services', [])
 
-.factory('ProductService', function() {
+.factory('ProductService', function ($http) {
         var products = [
                 {
                     Id: 2,
@@ -39,19 +39,14 @@ angular.module('starter.services', [])
         ];
 
         return {
-            all: function() {
-                return products;
-            },
-            remove: function(chat) {
-                products.splice(chats.indexOf(chat), 1);
-            },
-            get: function(chatId) {
-                for (var i = 0; i < products.length; i++) {
-                    if (products[i].id === parseInt(chatId)) {
-                        return products[i];
-                    }
-                }
-                return null;
+            getProducts: function(supermarketId) {
+                $http.get("http://simplyfind.somee.com/api/product/" + supermarketId)
+                    .success(function(data) {
+                        return data;
+                    })
+                    .error(function(argh,e,ed) {
+                        var d = argh;
+                    });
             }
         };
     });
