@@ -40,7 +40,7 @@ angular.module('starter.services', [])
 
         return {
             getProducts: function(supermarketId) {
-                $http.get("http://simplyfind.somee.com/api/product/" + supermarketId)
+                $http.get("http://localhost:1217/api/product/" + supermarketId)
                     .success(function(data) {
                         return data;
                     })
