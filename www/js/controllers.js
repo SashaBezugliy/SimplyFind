@@ -1,5 +1,5 @@
 angular.module('starter.controllers', [])
-    .controller('HomeCtrl', function ($scope, $q, $ionicGesture,$ionicPopup, $timeout, ProductService) {
+    .controller('HomeCtrl', function ($scope, $ionicGesture,$ionicPopup, $timeout, ProductService) {
         //todo
         //1. Fix onhold on marker on mobile
         //2. Style drop down
@@ -13,19 +13,19 @@ angular.module('starter.controllers', [])
             var centerLatLng = new google.maps.LatLng(49.773709, 24.009805);
         
             $scope.initMap = function () {
-                $q(ProductService.getProducts(1)).then(function (data) {
-                    allProducts = data;
 
-                    createTypeAhead();
-                    $('.typeahead').bind('typeahead:select', function (ev, product) {
-                        index++;
+                ProductService.getProducts(1).then(function(data) {
+                        allProducts = data;
+                        createTypeAhead();
+                        $('.typeahead').bind('typeahead:select', function(ev, product) {
+                            index++;
 
-                        addToMap(product);
-                        addToList(product);
+                            addToMap(product);
+                            addToList(product);
 
-                        filterTypeahed(product);
+                            filterTypeahed(product);
+                        });
                     });
-                });
 
                 setMapHeight();
 
@@ -69,7 +69,7 @@ angular.module('starter.controllers', [])
                     });
 
                     google.maps.event.addListener(marker, 'created', function (el) {
-                        var product = selectedProducts.filter(function (p) { return p.Id == $(el).data('product-id') })[0];
+                        var product = selectedProducts.filter(function (p) { return p.ProductId == $(el).data('product-id') })[0];
                         onHold(el, product.Id, product.ProductName);
 
                         centerMap(marker.getPosition());
@@ -148,15 +148,15 @@ angular.module('starter.controllers', [])
                             .parent().remove();
 
                         //add back to typeahead
-                        allProducts = allProducts.concat(selectedProducts.filter(function (p) { return p.Id == productId }));
+                        allProducts = allProducts.concat(selectedProducts.filter(function (p) { return p.ProductId == productId }));
                         $('.typeahead').typeahead('val', '').typeahead('destroy');
                         createTypeAhead();
                     }
                 };
 
                 function filterTypeahed(product) {
-                    selectedProducts = selectedProducts.concat(allProducts.filter(function (p) { return p.Id == product.id }));
-                    allProducts = allProducts.filter(function (p) { return p.Id != product.id });
+                    selectedProducts = selectedProducts.concat(allProducts.filter(function (p) { return p.ProductId == product.id }));
+                    allProducts = allProducts.filter(function (p) { return p.ProductId != product.id });
                     $('.typeahead').typeahead('val', '').typeahead('destroy');
                     createTypeAhead();
                 }
@@ -168,9 +168,9 @@ angular.module('starter.controllers', [])
                         local: allProducts.map(function (p) {
                             return {
                                 name: p.ProductName,
-                                lat: p.Lat,
-                                lng: p.Lng,
-                                id: p.Id
+                                lat: p.Latitude,
+                                lng: p.Longitude,
+                                id: p.ProductId
                             };
                         })
                     });

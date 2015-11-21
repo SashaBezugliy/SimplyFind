@@ -1,6 +1,6 @@
 angular.module('starter.services', [])
 
-.factory('ProductService', function ($http) {
+.factory('ProductService', function ($http, $q) {
         var products = [
                 {
                     Id: 2,
@@ -39,14 +39,13 @@ angular.module('starter.services', [])
         ];
 
         return {
-            getProducts: function(supermarketId) {
-                $http.get("http://localhost:1217/api/product/" + supermarketId)
+            getProducts: function (supermarketId) {
+                return $q(function(resolve, reject) {
+                    $http.get("http://localhost:1217/api/product/" + supermarketId)
                     .success(function(data) {
-                        return data;
-                    })
-                    .error(function(argh,e,ed) {
-                        var d = argh;
-                    });
+                            resolve(JSON.parse(data));
+                        });
+                });
             }
         };
     });
