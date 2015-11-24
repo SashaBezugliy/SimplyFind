@@ -64,8 +64,10 @@ angular.module('starter.controllers', [])
                     );
                     //click on MAP
                     google.maps.event.addListener(marker, 'click', function (el) {
-                        var productId = $(el).data('product-id');
-                        changeMarkerState(productId);
+                        if (!$scope.bla) {
+                            var productId = $(el).data('product-id');
+                            changeMarkerState(productId);
+                        }
                     });
 
                     google.maps.event.addListener(marker, 'created', function (el) {
@@ -99,6 +101,7 @@ angular.module('starter.controllers', [])
 
                 function onHold(elem, productId, productName) {
                     $ionicGesture.on('hold', function () {
+                        $scope.bla = true;
                         $timeout(function () { showConfirm(productId, productName) }, 200);
                     }, angular.element(elem));
                 }
@@ -136,6 +139,7 @@ angular.module('starter.controllers', [])
                     }).then(function (res) {
                         if (res)
                             removeMarker(productId);
+                        $scope.bla = false;
                     });
 
                     function removeMarker(productId) {
