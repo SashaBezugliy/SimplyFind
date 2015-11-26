@@ -1,10 +1,10 @@
 angular.module('starter.controllers', [])
     .controller('HomeCtrl', function ($scope, $ionicGesture,$ionicPopup, $timeout, ProductService) {
         //todo
-        //1. Fix onhold on marker on mobile
         //2. Style drop down
         //3. Animate "ckecked/unchecked" 
         //4. Max height for bottom area.
+        //5. Fix cyrylic in database
             var map;
             var allProducts = [];
             var selectedProducts = [];
@@ -72,7 +72,7 @@ angular.module('starter.controllers', [])
 
                     google.maps.event.addListener(marker, 'created', function (el) {
                         var product = selectedProducts.filter(function (p) { return p.ProductId == $(el).data('product-id') })[0];
-                        onHold(el, product.Id, product.ProductName);
+                        onHold(el, product.ProductId, product.ProductName);
 
                         centerMap(marker.getPosition());
 
@@ -83,20 +83,29 @@ angular.module('starter.controllers', [])
 
                 function addToList(product) {
                     var $dt = $('<div/>', { 'class': "list-marker-container" });
-                    var $cbx = $('<div/>', { 'class': "list-marker left", click: onCbxClick, data: { 'product-id': product.id } });
-                    var $label = $('<div/>', { 'class': "left", text: product.name, click: onLabelClick, data: { 'product-id': product.id } });
+
+                    var $cbx = $('<div/>', {
+                        'class': "list-marker left",
+                        click: function () {
+                            var productId = $(this).data('product-id');
+                            centerMap(getMarker(productId).getPosition());
+                            changeMarkerState(productId);
+                        },
+                        data: { 'product-id': product.id }
+                    });
+
+                    var $label = $('<div/>', {
+                        'class': "left",
+                        text: product.name,
+                        click: function() {
+                            var marker = getMarker($(this).data('product-id'));
+                            centerMap(marker.getPosition());
+                        },
+                        data: { 'product-id': product.id }
+                    });
                     $('.selected-list').append($dt.append($cbx).append($label).fadeIn(1000));
 
                     onHold($dt, product.id, product.name);
-
-                    function onLabelClick() {
-                        var marker = getMarker($(this).data('product-id'));
-                        centerMap(marker.getPosition());
-                    }
-
-                    function onCbxClick() {
-                        changeMarkerState($(this).data('product-id'));
-                    }
                 }
 
                 function onHold(elem, productId, productName) {
@@ -202,7 +211,7 @@ angular.module('starter.controllers', [])
                 }
 
                 function centerMap(latLng) {
-                    $timeout(function () { map.panTo(latLng); }, 100);
+                    $timeout(function () { map.panTo(latLng); }, 200);
                 }
             }
         }
