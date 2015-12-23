@@ -1,6 +1,7 @@
 angular.module('starter.controllers', [])
     .controller('HomeCtrl', function ($scope, $ionicGesture,$ionicPopup, $timeout, ProductService) {
         //todo
+        
         //2. Style drop down
         //3. Animate "ckecked/unchecked" 
         //4. Max height for bottom area.
@@ -82,7 +83,7 @@ angular.module('starter.controllers', [])
                 }
 
                 function addToList(product) {
-                    var $dt = $('<div/>', { 'class': "list-marker-container" });
+                    var $dt = $('<div/>', { 'class': "list-marker-container box-shadow" });
 
                     var $cbx = $('<div/>', {
                         'class': "list-marker left",
@@ -95,7 +96,7 @@ angular.module('starter.controllers', [])
                     });
 
                     var $label = $('<div/>', {
-                        'class': "left",
+                        'class': "left ",
                         text: product.name,
                         click: function() {
                             var marker = getMarker($(this).data('product-id'));
@@ -111,7 +112,7 @@ angular.module('starter.controllers', [])
                 function onHold(elem, productId, productName) {
                     $ionicGesture.on('hold', function () {
                         $scope.bla = true;
-                        $timeout(function () { showConfirm(productId, productName) }, 200);
+                        $timeout(function () { showConfirm(productId, productName) }, 10);
                     }, angular.element(elem));
                 }
 
@@ -134,7 +135,6 @@ angular.module('starter.controllers', [])
                 function showConfirm(productId, productName) {
                     $ionicPopup.confirm({
                         title: 'Видалити ' + productName + ' ?',
-                        //template: 'Видалити ' + '<b>' + productName + '</b>' + ' ?'
                         buttons: [
                             {
                                 text: 'Ні',
@@ -211,7 +211,7 @@ angular.module('starter.controllers', [])
                 }
 
                 function centerMap(latLng) {
-                    $timeout(function () { map.panTo(latLng); }, 200);
+                    $timeout(function () { map.panTo(latLng); }, 10);
                 }
             }
         }
