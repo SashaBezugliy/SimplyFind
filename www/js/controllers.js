@@ -5,7 +5,6 @@ angular.module('starter.controllers', [])
         //2. Style drop down
         //3. Animate "ckecked/unchecked" 
         //4. Max height for bottom area.
-        //5. Fix cyrylic in database
             var map;
             var allProducts = [];
             var selectedProducts = [];
@@ -53,10 +52,10 @@ angular.module('starter.controllers', [])
 
                 function addToMap(product) {
                     var element = $("<div/>")
-                        .addClass('map-marker animated bounce')
+                        .addClass('map-marker')
                         .data("product-id", product.id)
                         .text(product.name)
-                        .append($("<div/>").addClass('pin animated bounce'))[0];
+                        .append($("<div/>").addClass('pin'))[0];
 
                     var marker = new CustomMarker(
                         new google.maps.LatLng(product.lat, product.lng),
@@ -76,6 +75,10 @@ angular.module('starter.controllers', [])
                         onHold(el, product.ProductId, product.ProductName);
 
                         centerMap(marker.getPosition());
+
+                        $(marker.div).addClass('animated bounce');
+                        $(marker.div).find('.pin').addClass('animated bounce');
+
 
                     });
 
@@ -101,6 +104,13 @@ angular.module('starter.controllers', [])
                         click: function() {
                             var marker = getMarker($(this).data('product-id'));
                             centerMap(marker.getPosition());
+                            $(marker.div).removeClass('animated bounce');
+                            $(marker.div).find('.pin').removeClass('animated bounce');
+                            $timeout(function () {
+                                $(marker.div).addClass('animated bounce');
+                                $(marker.div).find('.pin').addClass('animated bounce');
+                            }, 10);
+
                         },
                         data: { 'product-id': product.id }
                     });
@@ -211,7 +221,8 @@ angular.module('starter.controllers', [])
                 }
 
                 function centerMap(latLng) {
-                    $timeout(function () { map.panTo(latLng); }, 10);
+                    //$timeout(function () { map.panTo(latLng); }, 10);
+                    map.panTo(latLng);
                 }
             }
         }
