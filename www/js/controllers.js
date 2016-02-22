@@ -22,11 +22,11 @@ angular.module('starter.controllers', [])
 
                             addToMap(product);
                             addToList(product);
-
+                            
                             filterTypeahed(product);
                         });
                     });
-
+                
                 setMapHeight();
 
                 var myOptions = {
@@ -37,8 +37,8 @@ angular.module('starter.controllers', [])
                 map = new google.maps.Map($("#map")[0], myOptions);
                 map.setOptions({ styles: [{ featureType: "poi", stylers: [{ "visibility": "off" }] }] });
 
-                var ctrlBottom = $('<div/>', { "class": "selected-list" });
-                map.controls[google.maps.ControlPosition.BOTTOM_LEFT].push(ctrlBottom[0]);
+                //var ctrlBottom = $('<div/>', { "class": "selected-list" });
+                //map.controls[google.maps.ControlPosition.BOTTOM_LEFT].push(ctrlBottom[0]);
 
                 $(window).resize(function() {
                     setMapHeight();
@@ -86,7 +86,7 @@ angular.module('starter.controllers', [])
                 }
 
                 function addToList(product) {
-                    var $dt = $('<div/>', { 'class': "list-marker-container box-shadow" });
+                    var $div = $('<div/>', { 'class': "list-marker-container" });
 
                     var $cbx = $('<div/>', {
                         'class': "list-marker left",
@@ -114,9 +114,19 @@ angular.module('starter.controllers', [])
                         },
                         data: { 'product-id': product.id }
                     });
-                    $('.selected-list').append($dt.append($cbx).append($label).fadeIn(1000));
 
-                    onHold($dt, product.id, product.name);
+                    if ($('.selected-list').find('.list-marker').length) {
+                        $('.selected-list').slick('unslick');
+                    }
+                    $('.selected-list').append($div.append($cbx).append($label).fadeIn(1000))
+                        .slick({
+                            slidesToShow: 3,
+                            slidesToScroll: 1,
+                            arrows: false,
+                            infinite: false
+                        });
+
+                    onHold($div, product.id, product.name);
                 }
 
                 function onHold(elem, productId, productName) {

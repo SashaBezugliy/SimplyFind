@@ -22,8 +22,6 @@ body {
 .selected-list {
     padding-bottom: 20px;
     margin-top: 20px;
-    max-height: 20%;
-    overflow: auto;
 }
 .map-marker {
     text-align: center;
