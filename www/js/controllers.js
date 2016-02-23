@@ -122,7 +122,7 @@ angular.module('starter.controllers', [])
                         .slick({
                             slidesToShow: 3,
                             slidesToScroll: 1,
-                            arrows: false,
+                            arrows: true,
                             infinite: false
                         });
 
