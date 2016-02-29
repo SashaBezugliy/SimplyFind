@@ -86,6 +86,7 @@ angular.module('starter.controllers', [])
                 }
 
                 function addToList(product) {
+
                     var $div = $('<div/>', { 'class': "list-marker-container" });
 
                     var $cbx = $('<div/>', {
@@ -115,16 +116,27 @@ angular.module('starter.controllers', [])
                         data: { 'product-id': product.id }
                     });
 
+                    var el = $div.append($cbx).append($label).fadeIn(1000);
+
                     if ($('.selected-list').find('.list-marker').length) {
                         $('.selected-list').slick('unslick');
                     }
-                    $('.selected-list').append($div.append($cbx).append($label).fadeIn(1000))
-                        .slick({
-                            slidesToShow: 3,
-                            slidesToScroll: 1,
-                            arrows: true,
-                            infinite: false
-                        });
+
+                    if ($('.slick-item:not(.three)').length) {
+                        $('.slick-item:not(.three)').append(el);
+                        if ($('.slick-item:not(.three)').children().length === 3)
+                            $('.slick-item:not(.three)').addClass('three');
+                    } else {
+                        var $slickItem = $('<div/>', { 'class': "slick-item" }).append(el);
+                        $('.selected-list').append($slickItem);
+                    }
+
+                    $('.selected-list').slick({
+                        slidesToShow: 2,
+                        slidesToScroll: 1,
+                        arrows: true,
+                        infinite: false
+                    });
 
                     onHold($div, product.id, product.name);
                 }
@@ -177,8 +189,10 @@ angular.module('starter.controllers', [])
                         selected.remove();
                         markers.splice(markers.indexOf(selected), 1);
                         //remove from list
-                        $('.selected-list').find('.list-marker').filter(function () { return $(this).data("product-id") == productId })
-                            .parent().remove();
+                        var $toRemove = $('.selected-list').find('.list-marker').filter(function() { return $(this).data("product-id") == productId }).parent();
+                        if ($toRemove.parent('.three').length)
+                            $toRemove.parent('.three').removeClass('tree');
+                        $toRemove.remove();
 
                         //add back to typeahead
                         allProducts = allProducts.concat(selectedProducts.filter(function (p) { return p.ProductId == productId }));
