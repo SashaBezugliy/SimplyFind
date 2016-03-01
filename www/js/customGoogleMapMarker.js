@@ -2,7 +2,9 @@ function CustomMarker(latlng, map, args) {
 	this.latlng = latlng;	
 	this.args = args;	
 	this.setMap(map);
-    this.div;
+	this.div;
+	this.id = args.id;
+	this.name = args.name;
 }
 
 CustomMarker.prototype = new google.maps.OverlayView();
@@ -10,9 +12,8 @@ CustomMarker.prototype = new google.maps.OverlayView();
 CustomMarker.prototype.draw = function() {
 	
 	var self = this;
-	
 	var div = this.div;
-	
+
 	if (!div) {
 
 	    div = this.div = self.args.element;

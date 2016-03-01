@@ -4,7 +4,6 @@ angular.module('starter.controllers', [])
         
         //2. Style drop down
         //3. Animate "ckecked/unchecked" 
-        //4. Max height for bottom area.
             var map;
             var allProducts = [];
             var selectedProducts = [];
@@ -60,7 +59,11 @@ angular.module('starter.controllers', [])
                     var marker = new CustomMarker(
                         new google.maps.LatLng(product.lat, product.lng),
                         map,
-                        { element: element }
+                        { 
+                            element: element,
+                            id: product.id,
+                            name: product.name
+                        }
                     );
                     //click on MAP
                     google.maps.event.addListener(marker, 'click', function (el) {
@@ -100,7 +103,7 @@ angular.module('starter.controllers', [])
                     });
 
                     var $label = $('<div/>', {
-                        'class': "left ",
+                        'class': "left product-text",
                         text: product.name,
                         click: function() {
                             var marker = getMarker($(this).data('product-id'));
@@ -159,7 +162,6 @@ angular.module('starter.controllers', [])
                     } else {
                         //uncheck on list and map 
                         $listEl.removeClass('checked');
-                        $("span." + productId + "").removeClass('checked');
                         $mapEl.removeClass('checked');
                     }
                 }
@@ -188,16 +190,31 @@ angular.module('starter.controllers', [])
                         var selected = getMarker(productId);
                         selected.remove();
                         markers.splice(markers.indexOf(selected), 1);
+
                         //remove from list
-                        var $toRemove = $('.selected-list').find('.list-marker').filter(function() { return $(this).data("product-id") == productId }).parent();
-                        if ($toRemove.parent('.three').length)
-                            $toRemove.parent('.three').removeClass('tree');
-                        $toRemove.remove();
+                        removeFromList();
 
                         //add back to typeahead
                         allProducts = allProducts.concat(selectedProducts.filter(function (p) { return p.ProductId == productId }));
                         $('.typeahead').typeahead('val', '').typeahead('destroy');
                         createTypeAhead();
+
+                        function removeFromList() {
+                            var checkedProductIds = $('.selected-list').find('.list-marker.checked')
+                                .filter(function (i) { return $(this).data("product-id") !== productId })
+                                .map(function () { return $(this).data("product-id") });
+
+                            //reorder list
+                            $('.selected-list').slick('unslick').empty();
+                            for (var i = 0; i < markers.length; i++) {
+                                addToList({ id: markers[i].id, name: markers[i].name })
+                            }
+                            //keep previously checked items as checked
+                            for (var i = 0; i < checkedProductIds.length; i++) {
+                                $('.selected-list').find('.list-marker').filter(function (i) { return $(this).data("product-id") === checkedProductIds[i] })
+                                .addClass('checked');
+                            }
+                        }
                     }
                 };
 
