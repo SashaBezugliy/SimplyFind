@@ -11,6 +11,10 @@ angular.module('starter.controllers', [])
             var markers = [];
             var centerLatLng = new google.maps.LatLng(49.773709, 24.009805);
         
+            $scope.elementTotalHeight = function() {
+                return $('.selected-list').outerHeight(true);
+            }
+
             $scope.initMap = function () {
 
                 ProductService.getProducts(1).then(function(data) {
@@ -21,12 +25,14 @@ angular.module('starter.controllers', [])
 
                             addToMap(product);
                             addToList(product);
-                            
+                            setMapHeight();
+
                             filterTypeahed(product);
                         });
                     });
                 
                 setMapHeight();
+
 
                 var myOptions = {
                     center: centerLatLng,
@@ -142,6 +148,7 @@ angular.module('starter.controllers', [])
                     });
 
                     onHold($div, product.id, product.name);
+
                 }
 
                 function onHold(elem, productId, productName) {
@@ -207,7 +214,7 @@ angular.module('starter.controllers', [])
                             //reorder list
                             $('.selected-list').slick('unslick').empty();
                             for (var i = 0; i < markers.length; i++) {
-                                addToList({ id: markers[i].id, name: markers[i].name })
+                                addToList({ id: markers[i].id, name: markers[i].name });
                             }
                             //keep previously checked items as checked
                             for (var i = 0; i < checkedProductIds.length; i++) {
@@ -254,7 +261,7 @@ angular.module('starter.controllers', [])
                 }
 
                 function setMapHeight() {
-                    $('#map').css('height', $('body').height() - $('.typeahead-container').height());
+                    $('#map').css('height', $('ion-content').outerHeight(true) -2*$('.typeahead-container').outerHeight(true) - $('.selected-list').outerHeight(true));
                 }
 
                 function getMarker(productId) {
