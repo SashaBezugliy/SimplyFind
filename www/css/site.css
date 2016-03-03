@@ -20,13 +20,13 @@ body {
     background-color: #fff;
 }
 .selected-list {
-    padding-bottom: 20px;
-    margin-top: 20px;
+    padding-top: 10px;
+    padding-bottom: 10px;
 }
 .map-marker {
     text-align: center;
     position: absolute;
-    font-size: 20px;
+    font-size: 15px;
 }
 
 .list-marker {
@@ -89,7 +89,6 @@ body {
     line-height: 0;
     position: absolute;
     display: block;
-    margin-top: -10px;
     padding: 0;
     cursor: pointer;
     color: transparent;
@@ -123,4 +122,7 @@ body {
 
 .selected-list .slick-list {
     padding-left: 40px;
+}
+.slick-disabled {
+    display: none!important;
 }

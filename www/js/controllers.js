@@ -10,10 +10,6 @@ angular.module('starter.controllers', [])
             var index = 0;
             var markers = [];
             var centerLatLng = new google.maps.LatLng(49.773709, 24.009805);
-        
-            $scope.elementTotalHeight = function() {
-                return $('.selected-list').outerHeight(true);
-            }
 
             $scope.initMap = function () {
 
@@ -102,8 +98,10 @@ angular.module('starter.controllers', [])
                         'class': "list-marker left",
                         click: function () {
                             var productId = $(this).data('product-id');
-                            centerMap(getMarker(productId).getPosition());
+                            var marker = getMarker(productId);
+                            centerMap(marker.getPosition());
                             changeMarkerState(productId);
+                            animateBounce($(marker.div));
                         },
                         data: { 'product-id': product.id }
                     });
@@ -114,17 +112,11 @@ angular.module('starter.controllers', [])
                         click: function() {
                             var marker = getMarker($(this).data('product-id'));
                             centerMap(marker.getPosition());
-                            $(marker.div).removeClass('animated bounce');
-                            $(marker.div).find('.pin').removeClass('animated bounce');
-                            $timeout(function () {
-                                $(marker.div).addClass('animated bounce');
-                                $(marker.div).find('.pin').addClass('animated bounce');
-                            }, 10);
-
+                            animateBounce($(marker.div));
                         },
                         data: { 'product-id': product.id }
                     });
-
+                        
                     var el = $div.append($cbx).append($label).fadeIn(1000);
 
                     if ($('.selected-list').find('.list-marker').length) {
@@ -148,6 +140,15 @@ angular.module('starter.controllers', [])
                     });
 
                     onHold($div, product.id, product.name);
+
+                    function animateBounce($el) {
+                        $el.removeClass('animated bounce');
+                        $el.find('.pin').removeClass('animated bounce');
+                        $timeout(function () {
+                            $el.addClass('animated bounce');
+                            $el.find('.pin').addClass('animated bounce');
+                        }, 10);
+                    }
 
                 }
 
@@ -261,7 +262,7 @@ angular.module('starter.controllers', [])
                 }
 
                 function setMapHeight() {
-                    $('#map').css('height', $('ion-content').outerHeight(true) -2*$('.typeahead-container').outerHeight(true) - $('.selected-list').outerHeight(true));
+                    $('#map').css('height', $('ion-content').outerHeight(true) - $('.typeahead-container').outerHeight(true) - $('.selected-list').outerHeight(true));
                 }
 
                 function getMarker(productId) {
