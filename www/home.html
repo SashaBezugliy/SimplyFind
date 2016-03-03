@@ -1,11 +1,22 @@
 <ion-view view-title="SimplyFind"  >
-    <ion-content ng-init="initMap()" >
+    <ion-content ng-init="ctrl.initMap()" >
         
         <input class="typeahead typeahead-container" type="text" placeholder="Введіть продукт">
 
         <div id="map"></div>
 
-        <div class="selected-list" ></div>
+        <ion-slides options="ctrl.options">
+            <ion-slide-page ng-repeat="slide in ctrl.slides track by $index">
+                <div class="list-marker-container" ng-repeat="product in slide.products">
+                    <div class="list-marker left" data-product-id="{{product.id}}"></div>
+                    <div class="left product-text">{{product.name}}</div>
+                </div>
+            </ion-slide-page>
+        </ion-slides>
+        
+    <!--<div class="selected-list" >
+
+    </div>-->
 
     </ion-content>
 </ion-view>

@@ -1,5 +1,5 @@
 angular.module('starter.controllers', [])
-    .controller('HomeCtrl', function ($scope, $ionicGesture,$ionicPopup, $timeout, ProductService) {
+    .controller('HomeCtrl', function ($scope, $ionicGesture, $ionicPopup, $timeout, ProductService, $ionicSlideBoxDelegate) {
         //todo
         
         //2. Style drop down
@@ -10,8 +10,14 @@ angular.module('starter.controllers', [])
             var index = 0;
             var markers = [];
             var centerLatLng = new google.maps.LatLng(49.773709, 24.009805);
+            var vm = this;
 
-            $scope.initMap = function () {
+            vm.options = {
+                slidesPerView: 2
+            };
+            vm.slides = [{ products: [{ id: 1, name: "cas" }, { id: 16, name: "(((((((((" }] }, { products: [{ id: 21, name: "csdfdas" }] }];
+
+            vm.initMap = function () {
 
                 ProductService.getProducts(1).then(function(data) {
                         allProducts = data;
@@ -69,7 +75,7 @@ angular.module('starter.controllers', [])
                     );
                     //click on MAP
                     google.maps.event.addListener(marker, 'click', function (el) {
-                        if (!$scope.bla) {
+                        if (!vm.bla) {
                             var productId = $(el).data('product-id');
                             changeMarkerState(productId);
                         }
@@ -119,25 +125,16 @@ angular.module('starter.controllers', [])
                         
                     var el = $div.append($cbx).append($label).fadeIn(1000);
 
-                    if ($('.selected-list').find('.list-marker').length) {
-                        $('.selected-list').slick('unslick');
-                    }
-
-                    if ($('.slick-item:not(.three)').length) {
-                        $('.slick-item:not(.three)').append(el);
-                        if ($('.slick-item:not(.three)').children().length === 3)
-                            $('.slick-item:not(.three)').addClass('three');
+                    var unfilled = vm.slides.filter(function (s) { return s.products.length < 3 });
+                    if (unfilled.length) {
+                        var slide = unfilled[0];
+                        slide.products.push({ id: product.id, name: product.name })
+                        if (slide.products.length === 3)
+                            vm.slides.push({ products: [] });
                     } else {
-                        var $slickItem = $('<div/>', { 'class': "slick-item" }).append(el);
-                        $('.selected-list').append($slickItem);
+                        var slide = { products: [{ id: product.id, name: product.name }] };
+                        vm.slides.push(slide);
                     }
-
-                    $('.selected-list').slick({
-                        slidesToShow: 2,
-                        slidesToScroll: 1,
-                        arrows: true,
-                        infinite: false
-                    });
 
                     onHold($div, product.id, product.name);
 
@@ -154,7 +151,7 @@ angular.module('starter.controllers', [])
 
                 function onHold(elem, productId, productName) {
                     $ionicGesture.on('hold', function () {
-                        $scope.bla = true;
+                        vm.bla = true;
                         $timeout(function () { showConfirm(productId, productName) }, 10);
                     }, angular.element(elem));
                 }
@@ -190,7 +187,7 @@ angular.module('starter.controllers', [])
                     }).then(function (res) {
                         if (res)
                             removeMarker(productId);
-                        $scope.bla = false;
+                        vm.bla = false;
                     });
 
                     function removeMarker(productId) {

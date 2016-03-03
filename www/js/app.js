@@ -29,7 +29,8 @@ angular.module('starter', ['ionic', 'starter.controllers', 'starter.services'])
             .state('home', {
                 url: '/',
                 templateUrl: 'home.html',
-                controller: 'HomeCtrl'
+                controller: 'HomeCtrl',
+                controllerAs: 'ctrl'
             });
 
     // if none of the above states are matched, use this as the fallback
