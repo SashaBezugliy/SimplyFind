@@ -13,9 +13,22 @@ angular.module('starter.controllers', [])
             var vm = this;
 
             vm.options = {
-                slidesPerView: 2
+                slidesPerView: 1
             };
-            vm.slides = [{ products: [{ id: 1, name: "cas" }, { id: 16, name: "(((((((((" }] }, { products: [{ id: 21, name: "csdfdas" }] }];
+            $scope.slides = [
+                {
+                    products: [{ id: 111, name: "111" }, { id: 222, name: "222" }, { id: 333, name: "333" }]
+                },
+                {
+                    products: [{ id: 444, name: "444" }, { id: 555, name: "555" }]
+                },
+                {
+                    products: [{ id: 666, name: "666" }]
+                }
+            ];
+
+            vm.listCbxClick = listCbxClick;
+            vm.listLabelClick = listLabelClick;
 
             vm.initMap = function () {
 
@@ -34,8 +47,7 @@ angular.module('starter.controllers', [])
                     });
                 
                 setMapHeight();
-
-
+                
                 var myOptions = {
                     center: centerLatLng,
                     mapTypeId: google.maps.MapTypeId.ROADMAP,
@@ -43,9 +55,6 @@ angular.module('starter.controllers', [])
                 };
                 map = new google.maps.Map($("#map")[0], myOptions);
                 map.setOptions({ styles: [{ featureType: "poi", stylers: [{ "visibility": "off" }] }] });
-
-                //var ctrlBottom = $('<div/>', { "class": "selected-list" });
-                //map.controls[google.maps.ControlPosition.BOTTOM_LEFT].push(ctrlBottom[0]);
 
                 $(window).resize(function() {
                     setMapHeight();
@@ -55,8 +64,7 @@ angular.module('starter.controllers', [])
 
                 var layer = new google.maps.KmlLayer("http://semenov.org.ua/Ashan.kmz");
                 layer.setMap(map);
-
-
+                
                 function addToMap(product) {
                     var element = $("<div/>")
                         .addClass('map-marker')
@@ -97,56 +105,23 @@ angular.module('starter.controllers', [])
                 }
 
                 function addToList(product) {
-
-                    var $div = $('<div/>', { 'class': "list-marker-container" });
-
-                    var $cbx = $('<div/>', {
-                        'class': "list-marker left",
-                        click: function () {
-                            var productId = $(this).data('product-id');
-                            var marker = getMarker(productId);
-                            centerMap(marker.getPosition());
-                            changeMarkerState(productId);
-                            animateBounce($(marker.div));
-                        },
-                        data: { 'product-id': product.id }
-                    });
-
-                    var $label = $('<div/>', {
-                        'class': "left product-text",
-                        text: product.name,
-                        click: function() {
-                            var marker = getMarker($(this).data('product-id'));
-                            centerMap(marker.getPosition());
-                            animateBounce($(marker.div));
-                        },
-                        data: { 'product-id': product.id }
-                    });
-                        
-                    var el = $div.append($cbx).append($label).fadeIn(1000);
-
-                    var unfilled = vm.slides.filter(function (s) { return s.products.length < 3 });
+                    var unfilled = $scope.slides.filter(function (s) { return s.products.length < 3 });
+                    var slide;
                     if (unfilled.length) {
-                        var slide = unfilled[0];
-                        slide.products.push({ id: product.id, name: product.name })
+                        slide = unfilled[0];
+                        slide.products.push({ id: product.id, name: product.name });
                         if (slide.products.length === 3)
-                            vm.slides.push({ products: [] });
+                            $scope.slides.push({ products: [] });
                     } else {
-                        var slide = { products: [{ id: product.id, name: product.name }] };
-                        vm.slides.push(slide);
+                        slide = { products: [{ id: product.id, name: product.name }] };
+                        $scope.slides.push(slide);
                     }
 
-                    onHold($div, product.id, product.name);
+                    $ionicSlideBoxDelegate.update();
 
-                    function animateBounce($el) {
-                        $el.removeClass('animated bounce');
-                        $el.find('.pin').removeClass('animated bounce');
-                        $timeout(function () {
-                            $el.addClass('animated bounce');
-                            $el.find('.pin').addClass('animated bounce');
-                        }, 10);
-                    }
+                    var $div = $("[product-id='" + product.id + "']");
 
+                    //onHold($div, product.id, product.name);
                 }
 
                 function onHold(elem, productId, productName) {
@@ -154,21 +129,6 @@ angular.module('starter.controllers', [])
                         vm.bla = true;
                         $timeout(function () { showConfirm(productId, productName) }, 10);
                     }, angular.element(elem));
-                }
-
-                function changeMarkerState(productId) {
-                    var $listEl = $('.selected-list').find('.list-marker').filter(function () { return $(this).data("product-id") == productId });
-                    var $mapEl = $('#map').find('.map-marker').filter(function () { return $(this).data("product-id") == productId });
-                    var isChecked = $listEl.hasClass('checked');
-                    if (!isChecked) {
-                        //check on list and map
-                        $listEl.addClass('checked');
-                        $mapEl.addClass('checked');
-                    } else {
-                        //uncheck on list and map 
-                        $listEl.removeClass('checked');
-                        $mapEl.removeClass('checked');
-                    }
                 }
 
                 function showConfirm(productId, productName) {
@@ -196,30 +156,10 @@ angular.module('starter.controllers', [])
                         selected.remove();
                         markers.splice(markers.indexOf(selected), 1);
 
-                        //remove from list
-                        removeFromList();
-
                         //add back to typeahead
                         allProducts = allProducts.concat(selectedProducts.filter(function (p) { return p.ProductId == productId }));
                         $('.typeahead').typeahead('val', '').typeahead('destroy');
                         createTypeAhead();
-
-                        function removeFromList() {
-                            var checkedProductIds = $('.selected-list').find('.list-marker.checked')
-                                .filter(function (i) { return $(this).data("product-id") !== productId })
-                                .map(function () { return $(this).data("product-id") });
-
-                            //reorder list
-                            $('.selected-list').slick('unslick').empty();
-                            for (var i = 0; i < markers.length; i++) {
-                                addToList({ id: markers[i].id, name: markers[i].name });
-                            }
-                            //keep previously checked items as checked
-                            for (var i = 0; i < checkedProductIds.length; i++) {
-                                $('.selected-list').find('.list-marker').filter(function (i) { return $(this).data("product-id") === checkedProductIds[i] })
-                                .addClass('checked');
-                            }
-                        }
                     }
                 };
 
@@ -261,15 +201,50 @@ angular.module('starter.controllers', [])
                 function setMapHeight() {
                     $('#map').css('height', $('ion-content').outerHeight(true) - $('.typeahead-container').outerHeight(true) - $('.selected-list').outerHeight(true));
                 }
+            }
 
-                function getMarker(productId) {
-                    return markers.filter(function (marker) { return $(marker.args.element).data("product-id") == productId })[0];
-                }
+            function listCbxClick(productId) {
+                var marker = getMarker(productId);
+                centerMap(marker.getPosition());
+                changeMarkerState(productId);
+                animateBounce($(marker.div));
+            }
+            function listLabelClick(productId) {
+                var marker = getMarker(productId);
+                centerMap(marker.getPosition());
+                animateBounce($(marker.div));
+            }
 
-                function centerMap(latLng) {
-                    //$timeout(function () { map.panTo(latLng); }, 10);
-                    map.panTo(latLng);
+            function getMarker(productId) {
+                return markers.filter(function (marker) { return $(marker.args.element).data("product-id") == productId })[0];
+            }
+
+            function centerMap(latLng) {
+                //$timeout(function () { map.panTo(latLng); }, 10);
+                map.panTo(latLng);
+            }
+
+            function changeMarkerState(productId) {
+                var $listEl = $('.list-marker').filter(function () { return $(this).data("product-id") == productId });
+                var $mapEl = $('#map').find('.map-marker').filter(function () { return $(this).data("product-id") == productId });
+                var isChecked = $listEl.hasClass('checked');
+                if (!isChecked) {
+                    //check on list and map
+                    $listEl.addClass('checked');
+                    $mapEl.addClass('checked');
+                } else {
+                    //uncheck on list and map 
+                    $listEl.removeClass('checked');
+                    $mapEl.removeClass('checked');
                 }
+            }
+            function animateBounce($el) {
+                $el.removeClass('animated bounce');
+                $el.find('.pin').removeClass('animated bounce');
+                $timeout(function () {
+                    $el.addClass('animated bounce');
+                    $el.find('.pin').addClass('animated bounce');
+                }, 10);
             }
         }
     );

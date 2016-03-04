@@ -20,8 +20,7 @@ body {
     background-color: #fff;
 }
 .selected-list {
-    padding-top: 10px;
-    padding-bottom: 10px;
+    height: 150px;
 }
 .map-marker {
     text-align: center;
@@ -71,58 +70,9 @@ body {
 .box-shadow{
     box-shadow: 0 1px 4px rgba(0,0,0,0.3);
 }
-.selected-list .product-text {
+.selectted-list .product-text {
     max-width: 80%;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
-}
-
-/*Slick styles*/
-
-.slick-next, .slick-prev {
-    top: 0;
-    width: 40px;
-    height: 100%;
-    transition: all .3s ease;
-    background: linear-gradient(to right,#fff 0%,rgba(255,255,255,.5)100%);
-    line-height: 0;
-    position: absolute;
-    display: block;
-    padding: 0;
-    cursor: pointer;
-    color: transparent;
-    border: none;
-    outline: none;
-    z-index:1;
-}
-
-.slick-prev {
-    left: 0;
-}
-.slick-next {
-    right: 0;
-    left: auto;
-}
-.slick-next:before, .slick-prev:before {
-    margin: 0 0 0 10px;
-    display: block;
-    width: 21px;
-    height: 33px;
-    content: '';
-    transition: all .3s ease;
-    opacity: .6;
-}
-    .slick-prev:before {
-        background: url('../img/slider_arrows.png') no-repeat left 0;
-    }
-    .slick-next:before {
-        background: url('../img/slider_arrows.png') no-repeat right 0;
-    }
-
-.selected-list .slick-list {
-    padding-left: 40px;
-}
-.slick-disabled {
-    display: none!important;
 }

@@ -5,18 +5,14 @@
 
         <div id="map"></div>
 
-        <ion-slides options="ctrl.options">
-            <ion-slide-page ng-repeat="slide in ctrl.slides track by $index">
+        <ion-slides options="ctrl.options" class="selected-list">
+            <ion-slide-page ng-repeat="slide in slides">
                 <div class="list-marker-container" ng-repeat="product in slide.products">
-                    <div class="list-marker left" data-product-id="{{product.id}}"></div>
-                    <div class="left product-text">{{product.name}}</div>
+                    <div class="list-marker left" data-product-id="{{product.id}}" ng-click="ctrl.listCbxClick(product.id)"></div>
+                    <div class="left product-text" ng-click="ctrl.listLabelClick(product.id)">{{product.name}}</div>
                 </div>
             </ion-slide-page>
         </ion-slides>
-        
-    <!--<div class="selected-list" >
-
-    </div>-->
 
     </ion-content>
 </ion-view>
