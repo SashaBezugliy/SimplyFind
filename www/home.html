@@ -5,14 +5,14 @@
 
         <div id="map"></div>
 
-        <ion-slides options="ctrl.options" class="selected-list">
-            <ion-slide-page ng-repeat="slide in slides">
+        <ion-slide-box options="ctrl.options" class="selected-list">
+            <ion-slide ng-repeat="slide in ctrl.slides">
                 <div class="list-marker-container" ng-repeat="product in slide.products">
-                    <div class="list-marker left" data-product-id="{{product.id}}" ng-click="ctrl.listCbxClick(product.id)"></div>
-                    <div class="left product-text" ng-click="ctrl.listLabelClick(product.id)">{{product.name}}</div>
+                    <div class="list-marker left" ng-class="{'checked': product.isChecked }" data-product-id="{{product.id}}" ng-click="ctrl.listCbxClick(product.id)"></div>
+                    <div class="left product-text" ng-click="ctrl.listLabelClick(product.id)" on-hold="ctrl.onHold(product)">{{product.name}}</div>
                 </div>
-            </ion-slide-page>
-        </ion-slides>
+            </ion-slide>
+        </ion-slide-box>
 
     </ion-content>
 </ion-view>

@@ -15,25 +15,25 @@ angular.module('starter.controllers', [])
             vm.options = {
                 slidesPerView: 1
             };
-            $scope.slides = [
+            vm.slides = [
                 {
-                    products: [{ id: 111, name: "111" }, { id: 222, name: "222" }, { id: 333, name: "333" }]
-                },
-                {
-                    products: [{ id: 444, name: "444" }, { id: 555, name: "555" }]
-                },
-                {
-                    products: [{ id: 666, name: "666" }]
+                    products: []
                 }
             ];
 
             vm.listCbxClick = listCbxClick;
             vm.listLabelClick = listLabelClick;
+            vm.onHold = onHoldList;
 
             vm.initMap = function () {
 
                 ProductService.getProducts(1).then(function(data) {
-                        allProducts = data;
+                    data.forEach(function (item, i, arr) {
+                        item.isChecked = false;
+                    });
+
+                    allProducts = data;
+
                         createTypeAhead();
                         $('.typeahead').bind('typeahead:select', function(ev, product) {
                             index++;
@@ -85,7 +85,7 @@ angular.module('starter.controllers', [])
                     google.maps.event.addListener(marker, 'click', function (el) {
                         if (!vm.bla) {
                             var productId = $(el).data('product-id');
-                            changeMarkerState(productId);
+                            changeProductState(productId);
                         }
                     });
 
@@ -104,64 +104,12 @@ angular.module('starter.controllers', [])
                     markers.push(marker);
                 }
 
-                function addToList(product) {
-                    var unfilled = $scope.slides.filter(function (s) { return s.products.length < 3 });
-                    var slide;
-                    if (unfilled.length) {
-                        slide = unfilled[0];
-                        slide.products.push({ id: product.id, name: product.name });
-                        if (slide.products.length === 3)
-                            $scope.slides.push({ products: [] });
-                    } else {
-                        slide = { products: [{ id: product.id, name: product.name }] };
-                        $scope.slides.push(slide);
-                    }
-
-                    $ionicSlideBoxDelegate.update();
-
-                    var $div = $("[product-id='" + product.id + "']");
-
-                    //onHold($div, product.id, product.name);
-                }
-
                 function onHold(elem, productId, productName) {
                     $ionicGesture.on('hold', function () {
                         vm.bla = true;
                         $timeout(function () { showConfirm(productId, productName) }, 10);
                     }, angular.element(elem));
                 }
-
-                function showConfirm(productId, productName) {
-                    $ionicPopup.confirm({
-                        title: 'Видалити ' + productName + ' ?',
-                        buttons: [
-                            {
-                                text: 'Ні',
-                                type: 'button-positive'
-                            }, {
-                                text: 'Так',
-                                type: 'button-default',
-                                onTap: function () { return true; }
-                            }
-                        ]
-                    }).then(function (res) {
-                        if (res)
-                            removeMarker(productId);
-                        vm.bla = false;
-                    });
-
-                    function removeMarker(productId) {
-                        //remove from map
-                        var selected = getMarker(productId);
-                        selected.remove();
-                        markers.splice(markers.indexOf(selected), 1);
-
-                        //add back to typeahead
-                        allProducts = allProducts.concat(selectedProducts.filter(function (p) { return p.ProductId == productId }));
-                        $('.typeahead').typeahead('val', '').typeahead('destroy');
-                        createTypeAhead();
-                    }
-                };
 
                 function filterTypeahed(product) {
                     selectedProducts = selectedProducts.concat(allProducts.filter(function (p) { return p.ProductId == product.id }));
@@ -170,45 +118,113 @@ angular.module('starter.controllers', [])
                     createTypeAhead();
                 }
 
-                function createTypeAhead() {
-                    var productNames = new Bloodhound({
-                        datumTokenizer: Bloodhound.tokenizers.obj.whitespace('name'),
-                        queryTokenizer: Bloodhound.tokenizers.whitespace,
-                        local: allProducts.map(function (p) {
-                            return {
-                                name: p.ProductName,
-                                lat: p.Latitude,
-                                lng: p.Longitude,
-                                id: p.ProductId
-                            };
-                        })
-                    });
-
-                    $('.typeahead').typeahead(
-                    {
-                        hint: true,
-                        highlight: true,
-                        minLength: 1
-                    },
-                    {
-                        name: 'productNames',
-                        displayKey: 'name',
-                        valueKey: 'name',
-                        source: productNames.ttAdapter(),
-                    });
-                }
-
                 function setMapHeight() {
                     $('#map').css('height', $('ion-content').outerHeight(true) - $('.typeahead-container').outerHeight(true) - $('.selected-list').outerHeight(true));
                 }
             }
 
+            function onHoldList(product) {
+                vm.bla = true;
+                showConfirm(product.id, product.name);
+            }
+
+            function showConfirm(productId, productName) {
+                $ionicPopup.confirm({
+                    title: 'Видалити ' + productName + ' ?',
+                    buttons: [
+                        {
+                            text: 'Ні',
+                            type: 'button-positive'
+                        }, {
+                            text: 'Так',
+                            type: 'button-default',
+                            onTap: function () { return true; }
+                        }
+                    ]
+                }).then(function (res) {
+                    if (res)
+                        removeMarker(productId);
+                    vm.bla = false;
+                });
+
+                function removeMarker(productId) {
+                    //remove from map
+                    var selected = getMarker(productId);
+                    selected.remove();
+                    markers.splice(markers.indexOf(selected), 1);
+
+                    var toRemove = selectedProducts.filter(function (p) { return p.ProductId == productId })[0];
+                    
+                    //remove from list
+                    selectedProducts.splice(selectedProducts.indexOf(toRemove), 1);
+                    vm.slides = [];
+                    for (var i = 0; i < selectedProducts.length; i++) {
+                        var product = {
+                            id: selectedProducts[i].ProductId,
+                            name: selectedProducts[i].ProductName,
+                            isChecked: selectedProducts[i].isChecked
+                        };
+                        addToList(product);
+                    }
+
+                    //add back to typeahead
+                    toRemove.isChecked = false;
+                    allProducts = allProducts.concat([toRemove]);
+                    $('.typeahead').typeahead('val', '').typeahead('destroy');
+                    createTypeAhead();
+                }
+            };
+
+            function addToList(product) {
+                var unfilled = vm.slides.filter(function (s) { return s.products.length < 3 });
+                var slide;
+                if (unfilled.length) {
+                    slide = unfilled[0];
+                    slide.products.push({ id: product.id, name: product.name, isChecked: product.isChecked });
+                } else {
+                    slide = { products: [{ id: product.id, name: product.name, isChecked: product.isChecked }] };
+                    vm.slides.push(slide);
+                }
+
+                $ionicSlideBoxDelegate.update();
+            }
+
+            function createTypeAhead() {
+                var productNames = new Bloodhound({
+                    datumTokenizer: Bloodhound.tokenizers.obj.whitespace('name'),
+                    queryTokenizer: Bloodhound.tokenizers.whitespace,
+                    local: allProducts.map(function (p) {
+                        return {
+                            id: p.ProductId,
+                            name: p.ProductName,
+                            lat: p.Latitude,
+                            lng: p.Longitude,
+                            isChecked: p.isChecked
+                        };
+                    })
+                });
+
+                $('.typeahead').typeahead(
+                {
+                    hint: true,
+                    highlight: true,
+                    minLength: 1
+                },
+                {
+                    name: 'productNames',
+                    displayKey: 'name',
+                    valueKey: 'name',
+                    source: productNames.ttAdapter(),
+                });
+            }
+
             function listCbxClick(productId) {
                 var marker = getMarker(productId);
                 centerMap(marker.getPosition());
-                changeMarkerState(productId);
+                changeProductState(productId);
                 animateBounce($(marker.div));
             }
+
             function listLabelClick(productId) {
                 var marker = getMarker(productId);
                 centerMap(marker.getPosition());
@@ -224,20 +240,29 @@ angular.module('starter.controllers', [])
                 map.panTo(latLng);
             }
 
-            function changeMarkerState(productId) {
-                var $listEl = $('.list-marker').filter(function () { return $(this).data("product-id") == productId });
+            function changeProductState(productId) {
+                var product = selectedProducts.filter(function (p) { return p.ProductId == productId })[0];
                 var $mapEl = $('#map').find('.map-marker').filter(function () { return $(this).data("product-id") == productId });
-                var isChecked = $listEl.hasClass('checked');
-                if (!isChecked) {
+                
+                var slideProduct;
+                for (var i = 0; i < vm.slides.length; i++) {
+                    var temp = vm.slides[i].products.filter(function (p) { return p.id === productId })[0];
+                    if (temp) { slideProduct = temp }
+                }
+
+                if (!product.isChecked) {
                     //check on list and map
-                    $listEl.addClass('checked');
+                    product.isChecked = slideProduct.isChecked = true;
                     $mapEl.addClass('checked');
                 } else {
                     //uncheck on list and map 
-                    $listEl.removeClass('checked');
+                    product.isChecked = slideProduct.isChecked = false;
                     $mapEl.removeClass('checked');
                 }
+
+                $ionicSlideBoxDelegate.update();
             }
+
             function animateBounce($el) {
                 $el.removeClass('animated bounce');
                 $el.find('.pin').removeClass('animated bounce');
