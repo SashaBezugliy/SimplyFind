@@ -41,7 +41,7 @@ angular.module('starter.services', [])
         return {
             getProducts: function (supermarketId) {
                 return $q(function(resolve, reject) {
-                    $http.get("http://simplyfind.somee.com/api/product/" + supermarketId)//http://simplyfind.gear.host/api/product/
+                    $http.get("http://simplyfind.gear.host/api/product/" + supermarketId)//http://simplyfind.gear.host/api/product/
                     .success(function(data) {
                             resolve(JSON.parse(data));
                         });
