@@ -32,6 +32,8 @@ angular.module('starter.controllers', [])
 
                     addToMap(product);
                     vm.selectedProducts.push(allProducts.filter(function (p) { return p.ProductId == product.id })[0]);
+                    $ionicSlideBoxDelegate.update();
+
                     setMapHeight();
 
                     filterTypeahed(product);
@@ -146,7 +148,7 @@ angular.module('starter.controllers', [])
 
                 //add back to typeahead
                 toRemove.IsChecked = false;
-                allProducts = allProducts.push(toRemove);
+                allProducts.push(toRemove);
                 $('.typeahead').typeahead('val', '').typeahead('destroy');
                 createTypeAhead();
             }
@@ -196,7 +198,7 @@ angular.module('starter.controllers', [])
 
         function onHoldList(product) {
             vm.bla = true;
-            showConfirm(product.id, product.name);
+            showConfirm(product.ProductId, product.ProductName);
         }
 
         function getMarker(productId) {
@@ -211,12 +213,6 @@ angular.module('starter.controllers', [])
         function changeProductState(productId) {
             var product = vm.selectedProducts.filter(function (p) { return p.ProductId == productId })[0];
             var $mapEl = $('#map').find('.map-marker').filter(function () { return $(this).data("product-id") == productId });
-
-            var slideProduct;
-            for (var i = 0; i < vm.slides.length; i++) {
-                var temp = vm.slides[i].products.filter(function (p) { return p.id === productId })[0];
-                if (temp) { slideProduct = temp }
-            }
 
             if (!product.IsChecked) {
                 //check on list and map

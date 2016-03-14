@@ -4,16 +4,17 @@
     var directive = {
         restrict: 'E',
         templateUrl: '../slider.html',
-        controller: controller,
+        controller: Сontroller,
         controllerAs: 'ctrl',
         replace: true,
         scope: {
             products: '=',
             eventHandlers: '='
-        },
+        }
     };
+    return directive;
 
-    function controller($scope, $ionicSlideBoxDelegate) {
+    function Сontroller($scope, $ionicSlideBoxDelegate) {
         var vm = this;
         vm.options = {
             slidesPerView: 1
@@ -23,21 +24,20 @@
         vm.listLabelClick = $scope.eventHandlers.listLabelClick;
         vm.onHold = $scope.eventHandlers.onHold;
 
-        $scope.$watchCollection('products', function (oldVal, newVal) {
+        $scope.$watch('products', function (newVal, oldVal) {
             if (newVal.length > oldVal.length) {
                 var product = newVal[newVal.length - 1];
                 addToList(product);
             }
             else if (newVal.length < oldVal.length) {
+                vm.slides = [{ products: [] }];
                 for (var i = 0; i < newVal.length; i++)
                     addToList(newVal[i]);
             }
-            //else if (newVal.length === oldVal.length) {
-
-            //}
-
             $ionicSlideBoxDelegate.update();
         }, true);
+
+
 
         function addToList(product) {
             var unfilledSlide = vm.slides.filter(function (s) { return s.products.length < 3 });
@@ -51,5 +51,5 @@
             }
         }
     }
-    return directive;
+    
 });
