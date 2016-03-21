@@ -1,29 +1,32 @@
 ﻿angular.module('starter.directives', [])
 .directive('slider', function () {
 
-    var directive = {
-        restrict: 'E',
-        templateUrl: '../slider.html',
-        controller: Сontroller,
-        controllerAs: 'ctrl',
-        replace: true,
-        scope: {
-            products: '=',
-            eventHandlers: '='
-        }
+        var directive = {
+            restrict: 'E',
+            templateUrl: '../slider.html',
+            controller: Сontroller,
+            controllerAs: 'ctrl',
+            replace: true,
+            scope: {
+                products: '=',
+                eventHandlers: '='
+            }
     };
     return directive;
 
     function Сontroller($scope, $ionicSlideBoxDelegate) {
         var vm = this;
         vm.options = {
-            slidesPerView: 1
+            slidesPerView: 2,
+            paginationClickable: true
         };
         vm.slides = [{ products: [] }];
         vm.listCbxClick = $scope.eventHandlers.listCbxClick;
         vm.listLabelClick = $scope.eventHandlers.listLabelClick;
         vm.onHold = $scope.eventHandlers.onHold;
+        
 
+        //watchers
         $scope.$watch('products', function (newVal, oldVal) {
             if (newVal.length > oldVal.length) {
                 var product = newVal[newVal.length - 1];
@@ -35,6 +38,9 @@
                     addToList(newVal[i]);
             }
             $ionicSlideBoxDelegate.update();
+
+            $scope.eventHandlers.onProductsChange();
+
         }, true);
 
 

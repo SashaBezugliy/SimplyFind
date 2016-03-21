@@ -19,8 +19,9 @@ body {
     width: 99%;
     background-color: #fff;
 }
+
 .selected-list {
-    height: 150px;
+    margin: 5px;
 }
 .map-marker {
     text-align: center;
@@ -70,7 +71,7 @@ body {
 .box-shadow{
     box-shadow: 0 1px 4px rgba(0,0,0,0.3);
 }
-.selectted-list .product-text {
+.selected-list .product-text {
     max-width: 80%;
     white-space: nowrap;
     overflow: hidden;
