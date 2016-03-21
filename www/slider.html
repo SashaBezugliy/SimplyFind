@@ -1,5 +1,5 @@
-﻿<div class="selected-list">
-    <ion-slide-box options="ctrl.options">
+﻿<div class="selected-list"  style="height: -webkit-calc({{ctrl.getHeight()}}px);">
+    <ion-slide-box options="ctrl.options" style="height: 100%">
         <ion-slide ng-repeat="slide in ctrl.slides">
             <div class="list-marker-container" ng-repeat="product in slide.products">
                 <div class="list-marker left" ng-class="{'checked': product.IsChecked }" data-product-id="{{product.ProductId}}" ng-click="ctrl.listCbxClick(product.ProductId)"></div>

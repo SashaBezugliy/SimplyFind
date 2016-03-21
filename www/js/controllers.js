@@ -22,10 +22,6 @@ angular.module('starter.controllers', [])
             return $('.selected-list').outerHeight(true) + $('.typeahead-container').outerHeight(true) + 10;
         }
 
-        vm.setSliderHeight = function () {
-            return vm.selectedProducts.length ? vm.selectedProducts.length * 3 : 0;
-        }
-
             vm.initMap = function() {
 
                 ProductService.getProducts(1).then(function(data) {

@@ -25,6 +25,9 @@
         vm.listLabelClick = $scope.eventHandlers.listLabelClick;
         vm.onHold = $scope.eventHandlers.onHold;
         
+        vm.getHeight = function () {
+            return vm.slides[0].products.length > 0 ? 90 : 0;
+        }
 
         //watchers
         $scope.$watch('products', function (newVal, oldVal) {
