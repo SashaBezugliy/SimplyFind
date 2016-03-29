@@ -1,6 +1,6 @@
 // Ionic Starter App
 
-angular.module('starter', ['ionic', 'starter.controllers', 'starter.services', 'starter.directives'])
+var starter =  angular.module('starter', ['ionic'])
 
 .run(function($ionicPlatform) {
   $ionicPlatform.ready(function() {
@@ -18,7 +18,7 @@ angular.module('starter', ['ionic', 'starter.controllers', 'starter.services', '
   });
 })
 
-.config(function ($stateProvider, $urlRouterProvider) {
+.config(function ($stateProvider, $urlRouterProvider, $httpProvider) {
 
 
   // Ionic uses AngularUI Router which uses the concept of states
@@ -28,11 +28,25 @@ angular.module('starter', ['ionic', 'starter.controllers', 'starter.services', '
         $stateProvider
             .state('home', {
                 url: '/',
-                templateUrl: 'home.html',
+                templateUrl: "js/home/home.html",
                 controller: 'HomeCtrl',
                 controllerAs: 'ctrl'
             });
+            //.state('signup', {
+            //    url: '/signup',
+            //    templateUrl: "js/signup/signup.html",
+            //    controller: 'SignUpCtrl',
+            //    controllerAs: 'ctrl'
+            //})
+            //.state('login', {
+            //    url: '/login',
+            //    templateUrl: "js/login/login.html",
+            //    controller: 'LoginCtrl',
+            //    controllerAs: 'ctrl'
+            //});
 
     // if none of the above states are matched, use this as the fallback
         $urlRouterProvider.otherwise('/');
+
+        //$httpProvider.interceptors.push('authInterceptorService');
     });

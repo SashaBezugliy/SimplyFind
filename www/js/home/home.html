@@ -1,0 +1,11 @@
+<ion-view view-title="SimplyFind"  >
+    <ion-content ng-init="ctrl.initMap()">
+
+        <input class="typeahead typeahead-container" type="text" placeholder="Введіть продукт" style="z-index: 1">
+
+        <div id="map" style="height: -webkit-calc(100% - {{ctrl.getSliderHeight()}}px);"></div>
+
+        <slider products="ctrl.selectedProducts" event-handlers="ctrl.eventHandlers" ></slider>
+
+</ion-content>
+</ion-view>

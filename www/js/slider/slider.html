@@ -1,0 +1,10 @@
+﻿<div class="selected-list">
+    <ion-slide-box options="ctrl.options">
+        <ion-slide ng-repeat="slide in ctrl.slides">
+            <div class="list-marker-container" ng-repeat="product in slide.products">
+                <div class="list-marker left" ng-class="{'checked': product.IsChecked }" data-product-id="{{product.ProductId}}" ng-click="ctrl.listCbxClick(product.ProductId)"></div>
+                <div class="left product-text" ng-click="ctrl.listLabelClick(product.ProductId)" on-hold="ctrl.onHold(product)">{{product.ProductName}}</div>
+            </div>
+        </ion-slide>
+    </ion-slide-box>
+</div>
