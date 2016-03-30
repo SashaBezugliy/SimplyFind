@@ -1,22 +1,22 @@
 ﻿starter
-    .controller('LoginCtrl',  function($scope, $location) {
-
-            $scope.loginData = {
+    .controller('LoginCtrl', function ($scope, $state, AuthService) {
+            var vm = this;
+            vm.loginData = {
                 userName: "",
                 password: ""
             };
 
-            $scope.message = "";
+            vm.message = "";
 
-            $scope.login = function() {
+            vm.login = function() {
 
-                authService.login($scope.loginData).then(function(response) {
+                AuthService.login(vm.loginData).then(function (response) {
 
-                        $location.path('/');
+                        $state.go('home');
 
                     },
                     function(err) {
-                        $scope.message = err.error_description;
+                        vm.message = err.error_description;
                     });
             };
 

@@ -1,6 +1,5 @@
 ﻿starter
-    .factory('authInterceptorService', [
-        '$q', '$location', 'localStorageService', function($q, $location, localStorageService) {
+    .factory('authInterceptorService', function ($q,  localstorageService) {
 
             var authInterceptorServiceFactory = {};
 
@@ -8,7 +7,7 @@
 
                 config.headers = config.headers || {};
 
-                var authData = localStorageService.get('authorizationData');
+                var authData = localstorageService.get('authorizationData');
                 if (authData) {
                     config.headers.Authorization = 'Bearer ' + authData.token;
                 }
@@ -18,7 +17,7 @@
 
             var _responseError = function(rejection) {
                 if (rejection.status === 401) {
-                    $location.path('/login');
+                    //$state.go('login');
                 }
                 return $q.reject(rejection);
             }
@@ -28,4 +27,4 @@
 
             return authInterceptorServiceFactory;
         }
-    ]);
+    );

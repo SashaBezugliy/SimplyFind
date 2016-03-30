@@ -1,5 +1,5 @@
 starter
-    .controller('HomeCtrl', function ($scope, $ionicGesture, $ionicPopup, $timeout, ProductService, $ionicSlideBoxDelegate) {
+    .controller('HomeCtrl', function($scope, $ionicGesture, $ionicPopup, $timeout, ProductService, $ionicSlideBoxDelegate, $ionicSideMenuDelegate, $state) {
             //todo
 
             //2. Style drop down
@@ -17,14 +17,20 @@ starter
                 onHold: onHoldList,
                 onProductsChange: setMapHeight
             };
+            vm.loginClick = function() {
+                $state.go('login');
+            }
+            vm.openMenu = function() {
+                $ionicSideMenuDelegate.toggleLeft();
+            };
 
-        vm.getSliderHeight= function() {
-            return $('.selected-list').outerHeight(true) + $('.typeahead-container').outerHeight(true) + 10;
-        }
+            vm.getSliderHeight = function() {
+                return $('.selected-list').outerHeight(true) + $('.typeahead-container').outerHeight(true) + 10;
+            }
 
-        vm.setSliderHeight = function () {
-            return vm.selectedProducts.length ? vm.selectedProducts.length * 3 : 0;
-        }
+            vm.setSliderHeight = function() {
+                return vm.selectedProducts.length ? vm.selectedProducts.length * 3 : 0;
+            }
 
             vm.initMap = function() {
 
@@ -64,7 +70,7 @@ starter
 
                 var layer = new google.maps.KmlLayer("http://semenov.org.ua/Ashan.kmz");
                 layer.setMap(map);
-
+                
                 function addToMap(product) {
                     var element = $("<div/>")
                         .addClass('map-marker')
