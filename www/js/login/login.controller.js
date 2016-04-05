@@ -12,7 +12,7 @@
 
                 AuthService.login(vm.loginData).then(function (response) {
 
-                        $state.go('home');
+                    $state.go('home', {userId: response.access_token });
 
                     },
                     function(err) {

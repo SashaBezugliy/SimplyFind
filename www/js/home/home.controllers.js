@@ -11,6 +11,7 @@ starter
 
             var vm = this;
             vm.selectedProducts = [];
+            vm.lists = [];
             vm.eventHandlers = {
                 listCbxClick: listCbxClick,
                 listLabelClick: listLabelClick,
@@ -62,7 +63,7 @@ starter
                 map = new google.maps.Map($("#map")[0], myOptions);
                 map.setOptions({ styles: [{ featureType: "poi", stylers: [{ "visibility": "off" }] }] });
 
-                $(window).resize(function() {
+                $(window).resize(function () {
                     setMapHeight();
                     google.maps.event.trigger(map, "resize");
                     centerMap(centerLatLng);
@@ -124,6 +125,10 @@ starter
                 }
 
             }
+
+            $scope.$on('productlist:updated', function (event, data) {
+                vm.lists = data;
+            });
 
             function setMapHeight() {
                 //$('#map').css('height', $('ion-content').outerHeight(true) - $('.typeahead-container').outerHeight(true) - $('.selected-list').outerHeight(true) - 10);
