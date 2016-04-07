@@ -1,5 +1,5 @@
 ﻿starter
-    .factory('authInterceptorService', function ($q,  localstorageService) {
+    .factory('authInterceptorService', function ($q, localstorageService) {
 
             var authInterceptorServiceFactory = {};
 
@@ -7,7 +7,7 @@
 
                 config.headers = config.headers || {};
 
-                var authData = localstorageService.get('authorizationData');
+                var authData = localstorageService.getObject('authorizationData');
                 if (authData) {
                     config.headers.Authorization = 'Bearer ' + authData.token;
                 }

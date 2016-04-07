@@ -60,17 +60,22 @@ starter
                     mapTypeId: google.maps.MapTypeId.ROADMAP,
                     disableDefaultUI: true
                 };
-                map = new google.maps.Map($("#map")[0], myOptions);
-                map.setOptions({ styles: [{ featureType: "poi", stylers: [{ "visibility": "off" }] }] });
+
+                map = new google.maps.Map(document.getElementById('map'), {
+                    center: { lat: 0, lng: 0 },
+                    zoom: 8
+                });
+
+                //map = new google.maps.Map($("#map")[0], myOptions);
+                //map.setOptions({ styles: [{ featureType: "poi", stylers: [{ "visibility": "off" }] }] });
+                //var layer = new google.maps.KmlLayer("http://semenov.org.ua/Ashan.kmz");
+                //layer.setMap(map);
 
                 $(window).resize(function () {
                     setMapHeight();
                     google.maps.event.trigger(map, "resize");
                     centerMap(centerLatLng);
                 });
-
-                var layer = new google.maps.KmlLayer("http://semenov.org.ua/Ashan.kmz");
-                layer.setMap(map);
                 
                 function addToMap(product) {
                     var element = $("<div/>")
