@@ -10,10 +10,8 @@
 
             vm.login = function() {
 
-                AuthService.login(vm.loginData).then(function (response) {
-
-                    $state.go('home', {userId: response.access_token });
-
+                AuthService.login(vm.loginData).then(function(response) {
+                        $state.go('home');
                     },
                     function(err) {
                         vm.message = err.error_description;

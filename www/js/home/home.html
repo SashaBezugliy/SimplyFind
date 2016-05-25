@@ -11,7 +11,9 @@
         <ion-nav-view>
             <ion-content ng-init="ctrl.initMap()">
                 <div id="map" style="height: -webkit-calc(100% - {{ctrl.getSliderHeight()}}px);"></div>
+                <button class="button button-positive " ng-click="ctrl.saveProductList()">Save List</button>
                 <slider products="ctrl.selectedProducts" event-handlers="ctrl.eventHandlers"></slider>
+                
             </ion-content>
 
         </ion-nav-view>
@@ -20,12 +22,14 @@
         <ion-header-bar class="bar bar-header bar-dark">
             My Lists
             <button class="button button-positive " ng-click="ctrl.loginClick()">Login</button>
+            <button class="button button-positive " ng-click="ctrl.signupClick()">Signup</button>
+            <button class="button button-positive " ng-click="ctrl.logoutClick()">Logout</button>
         </ion-header-bar>
 
         <ion-content has-header="true">
 
             <div class="list" >
-                <ion-radio ng-value="{{true}}" ng-repeat="list in ctrl.lists">{{list.ListName}}</ion-radio>
+                <ion-radio ng-value="{{true}}" ng-click="ctrl.onListClick(list.ListName)" ng-repeat="list in ctrl.lists">{{list.ListName}}</ion-radio>
             </div>
 
         </ion-content>

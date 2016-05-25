@@ -10,13 +10,16 @@ starter.config(function($stateProvider, $urlRouterProvider, $httpProvider) {
     // Each state's controller can be found in controllers.js
     $stateProvider
         .state('home', {
-            url: '/:userId',
+            url: '/',
             templateUrl: "js/home/home.html",
             controller: 'HomeCtrl',
             controllerAs: 'ctrl',
-            onEnter: function (ProductService, $stateParams) {
-                if ($stateParams.userId)
-                    ProductService.getProductLists($stateParams.userId);
+            onEnter: function (ProductService, AuthService) {
+                AuthService.fillAuthData();
+                if (AuthService.authentication.isAuth)
+                    ProductService.getProductLists(AuthService.authentication.authData.userId);
+                else
+                    ProductService.getProductLists(null);
             }
         })
         .state('signup', {

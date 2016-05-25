@@ -6,7 +6,7 @@
 
             var _authentication = {
                 isAuth: false,
-                userName: ""
+                authData: null
             };
 
             var _saveRegistration = function(registration) {
@@ -27,10 +27,12 @@
 
                 $http.post(serviceBase + 'token', data, { headers: { 'Content-Type': 'application/x-www-form-urlencoded' } }).success(function(response) {
 
-                    localstorageService.setObject('authorizationData', { token: response.access_token, userName: loginData.userName });
+                    var authData = { token: response.access_token, userName: loginData.userName, userId: response.userId };
+
+                    localstorageService.setObject('authorizationData', authData);
 
                     _authentication.isAuth = true;
-                    _authentication.userName = loginData.userName;
+                    _authentication.authData = authData;
 
                     deferred.resolve(response);
 
@@ -48,7 +50,7 @@
                 localstorageService.remove('authorizationData');
 
                 _authentication.isAuth = false;
-                _authentication.userName = "";
+                _authentication.authData = null;
 
             };
 
@@ -57,7 +59,7 @@
                 var authData = localstorageService.get('authorizationData');
                 if (authData) {
                     _authentication.isAuth = true;
-                    _authentication.userName = authData.userName;
+                    _authentication.authData = JSON.parse(authData);
                 }
 
             }

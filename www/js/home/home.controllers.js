@@ -1,11 +1,12 @@
 starter
-    .controller('HomeCtrl', function($scope, $ionicGesture, $ionicPopup, $timeout, ProductService, $ionicSlideBoxDelegate, $ionicSideMenuDelegate, $state) {
+    .controller('HomeCtrl', function ($scope, $ionicGesture, $ionicPopup, $timeout, ProductService, $ionicSlideBoxDelegate, $ionicSideMenuDelegate, $state, localstorageService, AuthService) {
             //todo
 
             //2. Style drop down
             //3. Animate "ckecked/unchecked" 
             var map;
-            var allProducts = [];
+            var allProducts;
+            var typeaheadProducts = [];
             var markers = [];
             var centerLatLng = new google.maps.LatLng(49.773709, 24.009805);
 
@@ -21,8 +22,45 @@ starter
             vm.loginClick = function() {
                 $state.go('login');
             }
+            vm.signupClick = function () {
+                $state.go('signup');
+            }
+            vm.logoutClick = function () {
+                AuthService.logOut();
+                $state.go($state.current, {}, { reload: true });
+                resetData();
+            }
+            vm.onListClick = function(listName) {
+                var list = vm.lists.find(function (l) { return l.ListName == listName });
+
+                resetData();
+
+                angular.forEach(list.Products, function (p) {
+                    var mapped = {
+                        id: p.ProductId,
+                        name: p.ProductName,
+                        lat: p.Latitude,
+                        lng: p.Longitude,
+                        IsChecked: p.IsChecked
+                    };
+
+                    addToMap(mapped);
+
+                    vm.selectedProducts.push(p);
+                });
+            }
+            vm.listNameId = 1;
             vm.openMenu = function() {
                 $ionicSideMenuDelegate.toggleLeft();
+            };
+
+            vm.saveProductList = function () {
+                var productList = {
+                    userId: localstorageService.getObject('authorizationData').userId,
+                    listName: "Product List " + vm.listNameId++,
+                    productIds: vm.selectedProducts.map(function (p) { return p.ProductId })
+                }
+                ProductService.saveProductList(productList);
             };
 
             vm.getSliderHeight = function() {
@@ -34,22 +72,22 @@ starter
             }
 
             vm.initMap = function() {
-
+                
                 ProductService.getProducts(1).then(function(data) {
                     data.forEach(function(item, i, arr) {
                         item.IsChecked = false;
                     });
 
-                    allProducts = data;
+                    typeaheadProducts = allProducts = data;
 
-                    createTypeAhead();
+                    resetData();
                     $('.typeahead').bind('typeahead:select', function(ev, product) {
 
                         addToMap(product);
-                        vm.selectedProducts.push(allProducts.filter(function(p) { return p.ProductId == product.id })[0]);
+                        vm.selectedProducts.push(typeaheadProducts.find(function(p) { return p.ProductId == product.id }));
                         $ionicSlideBoxDelegate.update();
 
-                        filterTypeahed(product);
+                        refreshTypeahed(typeaheadProducts.filter(function (p) { return p.ProductId != product.id }));
                     });
                 });
 
@@ -61,15 +99,10 @@ starter
                     disableDefaultUI: true
                 };
 
-                map = new google.maps.Map(document.getElementById('map'), {
-                    center: { lat: 0, lng: 0 },
-                    zoom: 8
-                });
-
-                //map = new google.maps.Map($("#map")[0], myOptions);
-                //map.setOptions({ styles: [{ featureType: "poi", stylers: [{ "visibility": "off" }] }] });
-                //var layer = new google.maps.KmlLayer("http://semenov.org.ua/Ashan.kmz");
-                //layer.setMap(map);
+                map = new google.maps.Map($("#map")[0], myOptions);
+                map.setOptions({ styles: [{ featureType: "poi", stylers: [{ "visibility": "off" }] }] });
+                var layer = new google.maps.KmlLayer("http://semenov.org.ua/Ashan.kmz");
+                layer.setMap(map);
 
                 $(window).resize(function () {
                     setMapHeight();
@@ -77,63 +110,77 @@ starter
                     centerMap(centerLatLng);
                 });
                 
-                function addToMap(product) {
-                    var element = $("<div/>")
-                        .addClass('map-marker')
-                        .data("product-id", product.id)
-                        .text(product.name)
-                        .append($("<div/>").addClass('pin'))[0];
 
-                    var marker = new CustomMarker(
-                        new google.maps.LatLng(product.lat, product.lng),
-                        map,
-                        {
-                            element: element,
-                            id: product.id,
-                            name: product.name
-                        }
-                    );
-                    //click on MAP
-                    google.maps.event.addListener(marker, 'click', function(el) {
-                        if (!vm.bla) {
-                            var productId = $(el).data('product-id');
-                            changeProductState(productId);
-                        }
-                    });
-
-                    google.maps.event.addListener(marker, 'created', function(el) {
-                        var product = vm.selectedProducts.filter(function(p) { return p.ProductId == $(el).data('product-id') })[0];
-                        onHold(el, product.ProductId, product.ProductName);
-
-                        centerMap(marker.getPosition());
-
-                        $(marker.div).addClass('animated bounce');
-                        $(marker.div).find('.pin').addClass('animated bounce');
-
-
-                    });
-
-                    markers.push(marker);
-                }
-
-                function onHold(elem, productId, productName) {
-                    $ionicGesture.on('hold', function() {
-                        vm.bla = true;
-                        $timeout(function() { showConfirm(productId, productName) }, 10);
-                    }, angular.element(elem));
-                }
-
-                function filterTypeahed(product) {
-                    allProducts = allProducts.filter(function(p) { return p.ProductId != product.id });
-                    $('.typeahead').typeahead('val', '').typeahead('destroy');
-                    createTypeAhead();
-                }
 
             }
 
             $scope.$on('productlist:updated', function (event, data) {
                 vm.lists = data;
             });
+
+            function refreshTypeahed(products) {
+                typeaheadProducts = products;
+                $('.typeahead').typeahead('val', '').typeahead('destroy');
+                createTypeAhead();
+            }
+
+            function resetData() {
+
+                refreshTypeahed(allProducts);
+
+                for (var i = 0; i < markers.length; i++) {
+                    markers[i].remove();
+                    markers.splice(i, 1);
+                    i--;
+                }
+                vm.selectedProducts = [];
+            }
+
+            function addToMap(product) {
+                var element = $("<div/>")
+                    .addClass('map-marker')
+                    .data("product-id", product.id)
+                    .text(product.name)
+                    .append($("<div/>").addClass('pin'))[0];
+
+                var marker = new CustomMarker(
+                    new google.maps.LatLng(product.lat, product.lng),
+                    map,
+                    {
+                        element: element,
+                        id: product.id,
+                        name: product.name
+                    }
+                );
+                //click on MAP
+                google.maps.event.addListener(marker, 'click', function (el) {
+                    if (!vm.bla) {
+                        var productId = $(el).data('product-id');
+                        changeProductState(productId);
+                    }
+                });
+
+                google.maps.event.addListener(marker, 'created', function (el) {
+                    var product = vm.selectedProducts.filter(function (p) { return p.ProductId == $(el).data('product-id') })[0];
+                    onHold(el, product.ProductId, product.ProductName);
+
+                    centerMap(marker.getPosition());
+
+                    $(marker.div).addClass('animated bounce');
+                    $(marker.div).find('.pin').addClass('animated bounce');
+
+
+                });
+
+                markers.push(marker);
+
+                function onHold(elem, productId, productName) {
+                    $ionicGesture.on('hold', function () {
+                        vm.bla = true;
+                        $timeout(function () { showConfirm(productId, productName) }, 10);
+                    }, angular.element(elem));
+                }
+            }
 
             function setMapHeight() {
                 //$('#map').css('height', $('ion-content').outerHeight(true) - $('.typeahead-container').outerHeight(true) - $('.selected-list').outerHeight(true) - 10);
@@ -171,7 +218,7 @@ starter
 
                     //add back to typeahead
                     toRemove.IsChecked = false;
-                    allProducts.push(toRemove);
+                    typeaheadProducts.push(toRemove);
                     $('.typeahead').typeahead('val', '').typeahead('destroy');
                     createTypeAhead();
                 }
@@ -181,7 +228,7 @@ starter
                 var productNames = new Bloodhound({
                     datumTokenizer: Bloodhound.tokenizers.obj.whitespace('name'),
                     queryTokenizer: Bloodhound.tokenizers.whitespace,
-                    local: allProducts.map(function(p) {
+                    local: typeaheadProducts.map(function (p) {
                         return {
                             id: p.ProductId,
                             name: p.ProductName,

@@ -27,16 +27,11 @@
         
 
         //watchers
-        $scope.$watch('products', function (newVal, oldVal) {
-            if (newVal.length > oldVal.length) {
-                var product = newVal[newVal.length - 1];
-                addToList(product);
-            }
-            else if (newVal.length < oldVal.length) {
-                vm.slides = [{ products: [] }];
-                for (var i = 0; i < newVal.length; i++)
-                    addToList(newVal[i]);
-            }
+        $scope.$watch('products', function(newVal) {
+            vm.slides = [{ products: [] }];
+            for (var i = 0; i < newVal.length; i++)
+                addToList(newVal[i]);
+
             $ionicSlideBoxDelegate.update();
 
             $scope.eventHandlers.onProductsChange();
