@@ -73,7 +73,7 @@ starter
 
             vm.initMap = function() {
                 
-                ProductService.getProducts(1).then(function(data) {
+                ProductService.getAllProducts(1).then(function (data) {
                     data.forEach(function(item, i, arr) {
                         item.IsChecked = false;
                     });

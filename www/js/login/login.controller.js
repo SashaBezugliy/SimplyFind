@@ -17,6 +17,8 @@
                         vm.message = err.error_description;
                     });
             };
-
+			vm.goBack = function(){
+				$state.go('home');
+			};
         }
     );

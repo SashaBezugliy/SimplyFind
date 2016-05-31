@@ -37,6 +37,8 @@ starter
                     vm.message = "Failed to register user due to:" + errors.join(' ');
                 });
         };
-
+			vm.goBack = function(){
+				$state.go('home');
+			};
 
     });
