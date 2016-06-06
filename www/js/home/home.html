@@ -9,7 +9,7 @@
 
         </ion-nav-bar>
         <ion-nav-view>
-            <ion-content ng-init="ctrl.initMap()">
+            <ion-content ng-init="ctrl.initMap()" >
                 <div id="map" style="height: -webkit-calc(100% - {{ctrl.getSliderHeight()}}px);"></div>
                 <button class="button button-positive " ng-click="ctrl.saveProductList()">Save List</button>
                 <slider products="ctrl.selectedProducts" event-handlers="ctrl.eventHandlers"></slider>

@@ -74,3 +74,6 @@ body {
     overflow: hidden;
     text-overflow: ellipsis;
 }
+.scroll {
+    height: 100%
+}
