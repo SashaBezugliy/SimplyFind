@@ -1,7 +1,7 @@
 ﻿starter
     .factory('AuthService', function ($http, $q, localstorageService) {
 
-        var serviceBase = 'http://simplyfind.bokeh.com.ua/';
+        var serviceBase = 'http://localhost:52097/';
             var authServiceFactory = {};
 
             var _authentication = {

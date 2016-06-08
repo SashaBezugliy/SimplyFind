@@ -30,8 +30,8 @@ starter
                 $state.go($state.current, {}, { reload: true });
                 resetData();
             }
-            vm.onListClick = function(listName) {
-                var list = vm.lists.find(function (l) { return l.ListName == listName });
+            vm.onListClick = function (listId) {
+                var list = vm.lists.find(function (l) { return l.ListId == listId });
 
                 resetData();
 
@@ -60,7 +60,9 @@ starter
                     listName: "Product List " + vm.listNameId++,
                     productIds: vm.selectedProducts.map(function (p) { return p.ProductId })
                 }
-                ProductService.saveProductList(productList);
+                ProductService.saveProductList(productList).then(function(data) {
+                    vm.lists.push({ Products: vm.selectedProducts, ListName: productList.listName, ListId: data.ProductListId });
+                });
             };
 
             vm.getSliderHeight = function() {
