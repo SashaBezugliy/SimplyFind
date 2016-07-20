@@ -1,10 +1,12 @@
 starter
     .factory('ProductService', function ($http, $q, $rootScope) {
 
+
         return {
+
             getProducts: function (supermarketId) {
                 return $q(function (resolve, reject) {
-                    $http.get("http://localhost:52097/api/product/" + supermarketId)//http://simplyfind.somee.com/api/product/ // http://simplyfind.gear.host/api/product/
+                    $http.get("http://simplyfind.bokeh.com.ua/api/product/" + supermarketId)//http://simplyfind.bokeh.com.ua/api/product/ // http://simplyfind.gear.host/api/product/
                     .success(function (data) {
                         resolve(JSON.parse(data));
                     });
